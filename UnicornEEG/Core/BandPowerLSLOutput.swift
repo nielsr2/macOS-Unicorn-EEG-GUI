@@ -2,8 +2,8 @@
  * BandPowerLSLOutput.swift
  * UnicornEEG
  *
- * Streams computed frequency band powers to a separate LSL stream.
- * 45 channels: 8 EEG channels × 5 bands + 5 averaged bands.
+ * Streams computed frequency band powers and ratios to a separate LSL stream.
+ * Dynamic channel count based on configured ratios.
  */
 
 import Foundation
@@ -11,23 +11,25 @@ import Foundation
 class BandPowerLSLOutput {
     var streamName: String
     private var outlet: lsl_outlet?
+    private var channelCount: Int = 0
 
-    // 8 channels × 5 bands + 5 averages = 45
-    static let channelCount: Int32 = 45
-    // Band power updates at ~2 Hz (250 Hz / 125 hop)
     static let nominalRate: Double = 2.0
 
     init(streamName: String = "UnicornBands") {
         self.streamName = streamName
     }
 
-    func start() {
+    func start(bandConfigs: [BandConfig], ratioConfigs: [BandRatioConfig]) {
+        let bandCount = bandConfigs.count
+        // 8 per-channel values per band + 1 average per band + ratios
+        channelCount = bandCount * 8 + bandCount + ratioConfigs.count
+
         let uid = randomUID(length: 8)
 
         let info = lsl_create_streaminfo(
             streamName,
             "FFT",
-            BandPowerLSLOutput.channelCount,
+            Int32(channelCount),
             BandPowerLSLOutput.nominalRate,
             cft_float32,
             uid
@@ -41,24 +43,32 @@ class BandPowerLSLOutput {
 
         let chns = lsl_append_child(desc, "channels")
 
-        let bandNames = ["delta", "theta", "alpha", "beta", "gamma"]
-
-        // Per-channel band powers: delta_eeg1, delta_eeg2, ..., gamma_eeg8
-        for band in bandNames {
+        // Per-channel band powers
+        for band in bandConfigs {
             for ch in 1...8 {
                 let chn = lsl_append_child(chns, "channel")
-                lsl_append_child_value(chn, "label", "\(band)_eeg\(ch)")
+                lsl_append_child_value(chn, "label", "\(band.name.lowercased())_eeg\(ch)")
                 lsl_append_child_value(chn, "unit", "log10(µV²)")
-                lsl_append_child_value(chn, "type", band.uppercased())
+                lsl_append_child_value(chn, "type", band.name.uppercased())
             }
         }
 
         // Average band powers
-        for band in bandNames {
+        for band in bandConfigs {
             let chn = lsl_append_child(chns, "channel")
-            lsl_append_child_value(chn, "label", "\(band)_avg")
+            lsl_append_child_value(chn, "label", "\(band.name.lowercased())_avg")
             lsl_append_child_value(chn, "unit", "log10(µV²)")
-            lsl_append_child_value(chn, "type", band.uppercased())
+            lsl_append_child_value(chn, "type", band.name.uppercased())
+        }
+
+        // Ratios
+        for ratio in ratioConfigs {
+            let numName = ratio.numerator < bandConfigs.count ? bandConfigs[ratio.numerator].name : "?"
+            let denName = ratio.denominator < bandConfigs.count ? bandConfigs[ratio.denominator].name : "?"
+            let chn = lsl_append_child(chns, "channel")
+            lsl_append_child_value(chn, "label", "ratio_\(numName)_\(denName)")
+            lsl_append_child_value(chn, "unit", "ratio")
+            lsl_append_child_value(chn, "type", "RATIO")
         }
 
         outlet = lsl_create_outlet(info, 0, 360)
@@ -68,18 +78,30 @@ class BandPowerLSLOutput {
     func pushResult(_ result: BandPowerResult) {
         guard let outlet = outlet else { return }
 
-        // Pack into flat array: [delta_ch1..delta_ch8, theta_ch1..theta_ch8, ..., gamma_ch1..gamma_ch8, delta_avg..gamma_avg]
-        var dat = [Float](repeating: 0, count: Int(BandPowerLSLOutput.channelCount))
+        var dat = [Float](repeating: 0, count: channelCount)
+        let bandCount = result.average.count
+        var idx = 0
 
-        for band in 0..<FrequencyBand.count {
+        // Per-channel band powers
+        for band in 0..<bandCount {
             for ch in 0..<8 {
-                dat[band * 8 + ch] = result.perChannel[ch][band]
+                if band < result.perChannel[ch].count {
+                    dat[idx] = result.perChannel[ch][band]
+                }
+                idx += 1
             }
         }
 
-        // Averages at the end (indices 40-44)
-        for band in 0..<FrequencyBand.count {
-            dat[40 + band] = result.average[band]
+        // Averages
+        for band in 0..<bandCount {
+            dat[idx] = result.average[band]
+            idx += 1
+        }
+
+        // Ratios
+        for r in 0..<result.ratios.count {
+            dat[idx] = result.ratios[r]
+            idx += 1
         }
 
         lsl_push_sample_f(outlet, &dat)

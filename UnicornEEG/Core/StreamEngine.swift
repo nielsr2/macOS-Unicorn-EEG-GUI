@@ -106,7 +106,10 @@ class StreamEngine: ObservableObject {
 
         // Start band power LSL if enabled
         if bandPowerLSLEnabled {
-            bandPowerLSL.start()
+            bandPowerLSL.start(
+                bandConfigs: bandPowerProcessor.bandConfigs,
+                ratioConfigs: bandPowerProcessor.ratioConfigs
+            )
         }
 
         shouldRun = true

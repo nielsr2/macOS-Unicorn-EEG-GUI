@@ -134,7 +134,6 @@ struct WaveformView: View {
                 Toggle("Accel", isOn: $showAccel).toggleStyle(.checkbox)
                 Toggle("Gyro", isOn: $showGyro).toggleStyle(.checkbox)
                 Toggle("Aux", isOn: $showAux).toggleStyle(.checkbox)
-                Toggle("Bands", isOn: $showBands).toggleStyle(.checkbox)
             }
             .font(.caption)
             .padding(.horizontal)

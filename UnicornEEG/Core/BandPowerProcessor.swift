@@ -10,27 +10,31 @@
 import Foundation
 import Accelerate
 
+struct BandRatioConfig: Identifiable {
+    let id: Int
+    var numerator: Int    // index into bandConfigs
+    var denominator: Int  // index into bandConfigs
+}
+
 struct BandPowerResult {
     let perChannel: [[Float]]  // [8 channels][5 bands]
     let average: [Float]       // [5 bands] averaged across channels
+    let ratios: [Float]        // computed ratios (linear scale, averaged across channels)
+}
+
+struct BandConfig: Identifiable {
+    let id: Int
+    var name: String
+    var low: Float
+    var high: Float
 }
 
 enum FrequencyBand: Int, CaseIterable {
-    case delta = 0  // 0.5–4 Hz
-    case theta = 1  // 4–8 Hz
-    case alpha = 2  // 8–13 Hz
-    case beta  = 3  // 13–30 Hz
-    case gamma = 4  // 30–50 Hz
-
-    var range: (low: Float, high: Float) {
-        switch self {
-        case .delta: return (0.5, 4.0)
-        case .theta: return (4.0, 8.0)
-        case .alpha: return (8.0, 13.0)
-        case .beta:  return (13.0, 30.0)
-        case .gamma: return (30.0, 50.0)
-        }
-    }
+    case delta = 0
+    case theta = 1
+    case alpha = 2
+    case beta  = 3
+    case gamma = 4
 
     var label: String {
         switch self {
@@ -43,25 +47,44 @@ enum FrequencyBand: Int, CaseIterable {
     }
 
     static let count = 5
+
+    static var defaultConfigs: [BandConfig] {
+        [
+            BandConfig(id: 0, name: "Delta", low: 0.5, high: 4.0),
+            BandConfig(id: 1, name: "Theta", low: 4.0, high: 8.0),
+            BandConfig(id: 2, name: "Alpha", low: 8.0, high: 13.0),
+            BandConfig(id: 3, name: "Beta",  low: 13.0, high: 30.0),
+            BandConfig(id: 4, name: "Gamma", low: 30.0, high: 50.0),
+        ]
+    }
 }
 
 class BandPowerProcessor {
-    let fftSize: Int = 512           // next power of 2 above 500 (2 sec at 250 Hz)
-    let hopSize: Int = 125           // 0.5 seconds between updates
+    let fftSize: Int = 512
+    let hopSize: Int = 125
     let sampleRate: Float = 250.0
     let eegChannelCount: Int = 8
 
-    // FFT setup
+    /// Configurable band frequency ranges
+    var bandConfigs: [BandConfig] = FrequencyBand.defaultConfigs
+
+    /// Configurable band power ratios (e.g. alpha/beta, theta/beta)
+    var ratioConfigs: [BandRatioConfig] = [
+        BandRatioConfig(id: 0, numerator: 2, denominator: 3),  // Alpha/Beta
+        BandRatioConfig(id: 1, numerator: 1, denominator: 3),  // Theta/Beta
+    ]
+
     private let log2n: vDSP_Length
     private let fftSetup: FFTSetup
     private var hannWindow: [Float]
 
-    // Sample accumulation buffer per channel
-    private var sampleBuffer: [[Float]]  // [channel][samples]
+    private var sampleBuffer: [[Float]]
     private var samplesAccumulated: Int = 0
     private var samplesSinceLastHop: Int = 0
 
-    // Callback when new band powers are available
+    /// Latest result for the bar chart (updated ~2 Hz)
+    var latestResult: BandPowerResult?
+
     var onBandPowerComputed: ((BandPowerResult) -> Void)?
 
     init() {
@@ -78,14 +101,11 @@ class BandPowerProcessor {
         vDSP_destroy_fftsetup(fftSetup)
     }
 
-    /// Feed a single sample. Call from the acquisition thread.
     func processSample(_ sample: UnicornSample) {
-        // Shift buffer left by 1 and append new sample for each channel
         for ch in 0..<eegChannelCount {
             if samplesAccumulated < fftSize {
                 sampleBuffer[ch][samplesAccumulated] = sample.eeg[ch]
             } else {
-                // Shift left by 1
                 sampleBuffer[ch].removeFirst()
                 sampleBuffer[ch].append(sample.eeg[ch])
             }
@@ -96,11 +116,11 @@ class BandPowerProcessor {
         }
         samplesSinceLastHop += 1
 
-        // Only compute FFT once we have a full window and it's time for a hop
         guard samplesAccumulated >= fftSize, samplesSinceLastHop >= hopSize else { return }
         samplesSinceLastHop = 0
 
         let result = computeBandPowers()
+        latestResult = result
         onBandPowerComputed?(result)
     }
 
@@ -110,49 +130,43 @@ class BandPowerProcessor {
         }
         samplesAccumulated = 0
         samplesSinceLastHop = 0
+        latestResult = nil
     }
 
-    // MARK: - FFT Computation
+    // MARK: - FFT
 
     private func computeBandPowers() -> BandPowerResult {
         let n = fftSize
         let halfN = n / 2
-        let freqResolution = sampleRate / Float(n)  // Hz per bin
+        let freqResolution = sampleRate / Float(n)
+        let bandCount = bandConfigs.count
 
-        var perChannel = [[Float]](repeating: [Float](repeating: 0, count: FrequencyBand.count), count: eegChannelCount)
+        var perChannel = [[Float]](repeating: [Float](repeating: 0, count: bandCount), count: eegChannelCount)
 
         for ch in 0..<eegChannelCount {
-            // Apply Hann window
             var windowed = [Float](repeating: 0, count: n)
             vDSP_vmul(sampleBuffer[ch], 1, hannWindow, 1, &windowed, 1, vDSP_Length(n))
 
-            // Convert to split complex for FFT
             var realPart = [Float](repeating: 0, count: halfN)
             var imagPart = [Float](repeating: 0, count: halfN)
 
-            // Pack into even/odd for real FFT
             for i in 0..<halfN {
                 realPart[i] = windowed[2 * i]
                 imagPart[i] = windowed[2 * i + 1]
             }
 
             var splitComplex = DSPSplitComplex(realp: &realPart, imagp: &imagPart)
-
-            // Forward FFT
             vDSP_fft_zrip(fftSetup, &splitComplex, 1, log2n, FFTDirection(kFFTDirection_Forward))
 
-            // Compute power spectrum (magnitude squared)
             var magnitudes = [Float](repeating: 0, count: halfN)
             vDSP_zvmags(&splitComplex, 1, &magnitudes, 1, vDSP_Length(halfN))
 
-            // Scale by 1/N²
             let scale = 1.0 / Float(n * n)
             vDSP_vsmul(magnitudes, 1, [scale], &magnitudes, 1, vDSP_Length(halfN))
 
-            // Extract band powers
-            for band in FrequencyBand.allCases {
-                let lowBin = max(1, Int(band.range.low / freqResolution))
-                let highBin = min(halfN - 1, Int(band.range.high / freqResolution))
+            for (bi, band) in bandConfigs.enumerated() {
+                let lowBin = max(1, Int(band.low / freqResolution))
+                let highBin = min(halfN - 1, Int(band.high / freqResolution))
 
                 var power: Float = 0
                 if highBin >= lowBin {
@@ -161,14 +175,12 @@ class BandPowerProcessor {
                     }
                 }
 
-                // Log scale (dB-like) — log10(power + epsilon) to avoid log(0)
-                perChannel[ch][band.rawValue] = log10(power + 1e-10)
+                perChannel[ch][bi] = log10(power + 1e-10)
             }
         }
 
-        // Average across channels
-        var average = [Float](repeating: 0, count: FrequencyBand.count)
-        for band in 0..<FrequencyBand.count {
+        var average = [Float](repeating: 0, count: bandCount)
+        for band in 0..<bandCount {
             var sum: Float = 0
             for ch in 0..<eegChannelCount {
                 sum += perChannel[ch][band]
@@ -176,6 +188,19 @@ class BandPowerProcessor {
             average[band] = sum / Float(eegChannelCount)
         }
 
-        return BandPowerResult(perChannel: perChannel, average: average)
+        // Compute ratios in linear power space (10^logPower), averaged across channels
+        var ratios = [Float]()
+        for ratio in ratioConfigs {
+            guard ratio.numerator < bandCount, ratio.denominator < bandCount else {
+                ratios.append(0)
+                continue
+            }
+            // Use linear power for the ratio, not log
+            let numPower = pow(10.0, average[ratio.numerator])
+            let denPower = pow(10.0, average[ratio.denominator])
+            ratios.append(denPower > 1e-20 ? numPower / denPower : 0)
+        }
+
+        return BandPowerResult(perChannel: perChannel, average: average, ratios: ratios)
     }
 }

@@ -1,0 +1,421 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		02A510323141D304F6014DB2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 218D66B6AAD129DCC19AF877 /* Assets.xcassets */; };
+		04D72EB81F7FC87A77B97D7F /* BandPowerProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A35083470FBC92B9153CBDE /* BandPowerProcessor.swift */; };
+		1739776A058B1C95B2381E4D /* UnicornDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE634182C5E013A6B9321E59 /* UnicornDevice.swift */; };
+		280F98610BCE57AFBA629D14 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1814EAEDA8314C5239703A0D /* WaveformView.swift */; };
+		2BC3CE05012CD84D436A1B40 /* OutputProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73CB5466F27202E812E9608C /* OutputProtocol.swift */; };
+		3642FE6B7EFAF20707DF900E /* LSLOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A26B632517FD72D3BEA9BA2 /* LSLOutput.swift */; };
+		43A5D5DA28DFBE9977A4715E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9C7D2D03B0DA0D060254BB9 /* ContentView.swift */; };
+		5D4257E83EB54C35926E2A2A /* AudioOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56DD2002371FB6BA3F3C9134 /* AudioOutput.swift */; };
+		5FC6DE0663366BD56DB40C56 /* UnicornEEGApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531DF2F83BD187CAF9F63567 /* UnicornEEGApp.swift */; };
+		61A4B726DABD4F27071C3694 /* PacketParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5093A9521AE84ED20BAEB2CC /* PacketParser.swift */; };
+		6A1ED1F560ADE85C525D921E /* OutputConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47615AA2B32780BF1D8A3BEC /* OutputConfigView.swift */; };
+		79255A3140191D915ADA636A /* BandPowerLSLOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2589B027E200970145150776 /* BandPowerLSLOutput.swift */; };
+		97639D923404AF728A8EE66D /* ConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81977FC9D07F628FBB2C8734 /* ConnectionView.swift */; };
+		A8C27A807C67655052479AD8 /* StatusBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9275F604922D26D4D36CC7C /* StatusBarView.swift */; };
+		A98397FA6966EF138499E33D /* TextFileOutput.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA39B777D7A9E57E38141752 /* TextFileOutput.swift */; };
+		CEAE4B7194457DA983EF4656 /* StreamEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF825DED564941565FE724B /* StreamEngine.swift */; };
+		D79536C42A2B7E80A0E05002 /* RingBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AF86FC683DD21A313EDF0E5 /* RingBuffer.swift */; };
+		DCABCE5CFECE899E61DF1959 /* BandPowerBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 751E2238895C197E5637CEDD /* BandPowerBarView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		1814EAEDA8314C5239703A0D /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
+		218D66B6AAD129DCC19AF877 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		2589B027E200970145150776 /* BandPowerLSLOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandPowerLSLOutput.swift; sourceTree = "<group>"; };
+		2AF86FC683DD21A313EDF0E5 /* RingBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RingBuffer.swift; sourceTree = "<group>"; };
+		31AF872655915A739D8BB9F0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		3FF825DED564941565FE724B /* StreamEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamEngine.swift; sourceTree = "<group>"; };
+		47615AA2B32780BF1D8A3BEC /* OutputConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputConfigView.swift; sourceTree = "<group>"; };
+		4A35083470FBC92B9153CBDE /* BandPowerProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandPowerProcessor.swift; sourceTree = "<group>"; };
+		5093A9521AE84ED20BAEB2CC /* PacketParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PacketParser.swift; sourceTree = "<group>"; };
+		531DF2F83BD187CAF9F63567 /* UnicornEEGApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnicornEEGApp.swift; sourceTree = "<group>"; };
+		56DD2002371FB6BA3F3C9134 /* AudioOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioOutput.swift; sourceTree = "<group>"; };
+		5AA5C9C4F100EA4279ADC515 /* UnicornEEG-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UnicornEEG-Bridging-Header.h"; sourceTree = "<group>"; };
+		6A26B632517FD72D3BEA9BA2 /* LSLOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LSLOutput.swift; sourceTree = "<group>"; };
+		73CB5466F27202E812E9608C /* OutputProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OutputProtocol.swift; sourceTree = "<group>"; };
+		751E2238895C197E5637CEDD /* BandPowerBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BandPowerBarView.swift; sourceTree = "<group>"; };
+		81977FC9D07F628FBB2C8734 /* ConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionView.swift; sourceTree = "<group>"; };
+		A2DE34BDBF0CA1828E566897 /* UnicornEEG.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnicornEEG.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AE634182C5E013A6B9321E59 /* UnicornDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnicornDevice.swift; sourceTree = "<group>"; };
+		B9C7D2D03B0DA0D060254BB9 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		D9275F604922D26D4D36CC7C /* StatusBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarView.swift; sourceTree = "<group>"; };
+		DA39B777D7A9E57E38141752 /* TextFileOutput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFileOutput.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		4B42C646B5F1B6B6AAEF3BB4 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				751E2238895C197E5637CEDD /* BandPowerBarView.swift */,
+				81977FC9D07F628FBB2C8734 /* ConnectionView.swift */,
+				B9C7D2D03B0DA0D060254BB9 /* ContentView.swift */,
+				47615AA2B32780BF1D8A3BEC /* OutputConfigView.swift */,
+				D9275F604922D26D4D36CC7C /* StatusBarView.swift */,
+				1814EAEDA8314C5239703A0D /* WaveformView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5E8E2B75ABDE2732A2FAEBDE /* UnicornEEG */ = {
+			isa = PBXGroup;
+			children = (
+				218D66B6AAD129DCC19AF877 /* Assets.xcassets */,
+				31AF872655915A739D8BB9F0 /* Info.plist */,
+				5AA5C9C4F100EA4279ADC515 /* UnicornEEG-Bridging-Header.h */,
+				531DF2F83BD187CAF9F63567 /* UnicornEEGApp.swift */,
+				9BF7A87C94028A97B7B63876 /* Core */,
+				4B42C646B5F1B6B6AAEF3BB4 /* Views */,
+			);
+			path = UnicornEEG;
+			sourceTree = "<group>";
+		};
+		9BF7A87C94028A97B7B63876 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				56DD2002371FB6BA3F3C9134 /* AudioOutput.swift */,
+				2589B027E200970145150776 /* BandPowerLSLOutput.swift */,
+				4A35083470FBC92B9153CBDE /* BandPowerProcessor.swift */,
+				6A26B632517FD72D3BEA9BA2 /* LSLOutput.swift */,
+				73CB5466F27202E812E9608C /* OutputProtocol.swift */,
+				5093A9521AE84ED20BAEB2CC /* PacketParser.swift */,
+				2AF86FC683DD21A313EDF0E5 /* RingBuffer.swift */,
+				3FF825DED564941565FE724B /* StreamEngine.swift */,
+				DA39B777D7A9E57E38141752 /* TextFileOutput.swift */,
+				AE634182C5E013A6B9321E59 /* UnicornDevice.swift */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		AB516049567B81372635F8AD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A2DE34BDBF0CA1828E566897 /* UnicornEEG.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F32859A3247AD767D3134EF1 = {
+			isa = PBXGroup;
+			children = (
+				5E8E2B75ABDE2732A2FAEBDE /* UnicornEEG */,
+				AB516049567B81372635F8AD /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		50A1B714FDF4EC339A04845E /* UnicornEEG */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FFE48639D92297E63E3926F1 /* Build configuration list for PBXNativeTarget "UnicornEEG" */;
+			buildPhases = (
+				2C87117F1B84C9DA6490D3A3 /* Sources */,
+				FDF3D35012D2FEC21421999F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = UnicornEEG;
+			packageProductDependencies = (
+			);
+			productName = UnicornEEG;
+			productReference = A2DE34BDBF0CA1828E566897 /* UnicornEEG.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2EB14591CBD360B5B517437A /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = A62E063E1A6142697F9803C9 /* Build configuration list for PBXProject "UnicornEEG" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = F32859A3247AD767D3134EF1;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = AB516049567B81372635F8AD /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				50A1B714FDF4EC339A04845E /* UnicornEEG */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FDF3D35012D2FEC21421999F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				02A510323141D304F6014DB2 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2C87117F1B84C9DA6490D3A3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5D4257E83EB54C35926E2A2A /* AudioOutput.swift in Sources */,
+				DCABCE5CFECE899E61DF1959 /* BandPowerBarView.swift in Sources */,
+				79255A3140191D915ADA636A /* BandPowerLSLOutput.swift in Sources */,
+				04D72EB81F7FC87A77B97D7F /* BandPowerProcessor.swift in Sources */,
+				97639D923404AF728A8EE66D /* ConnectionView.swift in Sources */,
+				43A5D5DA28DFBE9977A4715E /* ContentView.swift in Sources */,
+				3642FE6B7EFAF20707DF900E /* LSLOutput.swift in Sources */,
+				6A1ED1F560ADE85C525D921E /* OutputConfigView.swift in Sources */,
+				2BC3CE05012CD84D436A1B40 /* OutputProtocol.swift in Sources */,
+				61A4B726DABD4F27071C3694 /* PacketParser.swift in Sources */,
+				D79536C42A2B7E80A0E05002 /* RingBuffer.swift in Sources */,
+				A8C27A807C67655052479AD8 /* StatusBarView.swift in Sources */,
+				CEAE4B7194457DA983EF4656 /* StreamEngine.swift in Sources */,
+				A98397FA6966EF138499E33D /* TextFileOutput.swift in Sources */,
+				1739776A058B1C95B2381E4D /* UnicornDevice.swift in Sources */,
+				5FC6DE0663366BD56DB40C56 /* UnicornEEGApp.swift in Sources */,
+				280F98610BCE57AFBA629D14 /* WaveformView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		3D69E04719B2818A968911DB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		417630D0645990BCF3D75751 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		CB5ABB4A690F661ECE16D98B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = UnicornEEG/UnicornEEG.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					/Library/Frameworks,
+				);
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/Library/Frameworks/lsl.framework/Versions/A/include,
+				);
+				INFOPLIST_FILE = UnicornEEG/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					/Library/Frameworks,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				OTHER_LDFLAGS = (
+					"-lserialport",
+					"-framework",
+					lsl,
+					"-lportaudio",
+					"-lsamplerate",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.unicorn.eeg;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "UnicornEEG/UnicornEEG-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		F66CB2A29F4FAB3EC8F4D367 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = UnicornEEG/UnicornEEG.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					/Library/Frameworks,
+				);
+				HEADER_SEARCH_PATHS = (
+					/usr/local/include,
+					/Library/Frameworks/lsl.framework/Versions/A/include,
+				);
+				INFOPLIST_FILE = UnicornEEG/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@executable_path/../Frameworks",
+					/Library/Frameworks,
+				);
+				LIBRARY_SEARCH_PATHS = (
+					/usr/local/lib,
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				OTHER_LDFLAGS = (
+					"-lserialport",
+					"-framework",
+					lsl,
+					"-lportaudio",
+					"-lsamplerate",
+					"-lc++",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.unicorn.eeg;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = "UnicornEEG/UnicornEEG-Bridging-Header.h";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A62E063E1A6142697F9803C9 /* Build configuration list for PBXProject "UnicornEEG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				3D69E04719B2818A968911DB /* Debug */,
+				417630D0645990BCF3D75751 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		FFE48639D92297E63E3926F1 /* Build configuration list for PBXNativeTarget "UnicornEEG" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB5ABB4A690F661ECE16D98B /* Debug */,
+				F66CB2A29F4FAB3EC8F4D367 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2EB14591CBD360B5B517437A /* Project object */;
+}

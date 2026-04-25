@@ -156,10 +156,22 @@ class UnicornDevice {
         guard let p = port else { return }
         sp_flush(p, SP_BUF_BOTH)
 
-        // Drain any remaining bytes
-        var drain = [UInt8](repeating: 0, count: 512)
+        // Drain until silence: keep reading until no data arrives for 200ms.
+        // This handles the case where the device is actively streaming —
+        // a simple "read until empty" loop doesn't work because more data
+        // arrives between reads at 11 KB/s.
+        var drain = [UInt8](repeating: 0, count: 4096)
+        var silentRounds = 0
         drain.withUnsafeMutableBufferPointer { buf in
-            while sp_nonblocking_read(p, buf.baseAddress, buf.count).rawValue > 0 {}
+            while silentRounds < 4 {  // 4 × 50ms = 200ms of silence
+                let n = sp_nonblocking_read(p, buf.baseAddress, buf.count).rawValue
+                if n <= 0 {
+                    silentRounds += 1
+                    Thread.sleep(forTimeInterval: 0.05)
+                } else {
+                    silentRounds = 0  // data still flowing, reset
+                }
+            }
         }
     }
 
@@ -183,13 +195,14 @@ class UnicornDevice {
         return read.rawValue == 3 && response[0] == 0x00 && response[1] == 0x00 && response[2] == 0x00
     }
 
-    /// Send stop_acq command and flush the port.
+    /// Send stop_acq command and drain until silence.
     private func sendStop() {
         guard let p = port else { return }
         stopAcq.withUnsafeBufferPointer { buf in
             _ = sp_blocking_write(p, buf.baseAddress, buf.count, writeTimeout)
         }
-        Thread.sleep(forTimeInterval: 0.3)
+        // Wait for device to process stop, then drain all remaining data
+        Thread.sleep(forTimeInterval: 1.0)
         flush()
     }
 
@@ -197,26 +210,19 @@ class UnicornDevice {
         guard port != nil else { throw UnicornDeviceError.portNotOpen }
         shouldStop = false
 
-        // Attempt 1: stop any stale acquisition, flush, then start
+        // Attempt 1: stop any stale acquisition, drain until silence, then start
         sendStop()
-        Thread.sleep(forTimeInterval: 0.2)
-        flush()
 
         if tryStartAcq() { return }
 
-        // Attempt 2: maybe the device needed the full stop cycle — try again
+        // Attempt 2: try again with a fresh stop cycle
         sendStop()
-        Thread.sleep(forTimeInterval: 0.5)
-        flush()
 
         if tryStartAcq() { return }
 
-        // Attempt 3: the serial connection itself may be corrupted.
-        // Close the port, reopen it, and try from scratch.
+        // Attempt 3: close the port, reopen it, and try from scratch
         try reconnect()
         sendStop()
-        Thread.sleep(forTimeInterval: 0.5)
-        flush()
 
         if tryStartAcq() { return }
 
