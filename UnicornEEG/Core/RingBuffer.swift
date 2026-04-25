@@ -2,7 +2,7 @@
  * RingBuffer.swift
  * UnicornEEG
  *
- * Thread-safe single-producer single-consumer ring buffer for passing EEG
+ * Thread-safe single-producer single-consumer ring buffer for passing
  * samples from the acquisition thread to the UI visualization thread.
  */
 
@@ -16,7 +16,7 @@ class RingBuffer {
     private var count: Int = 0
     private let lock = NSLock()
 
-    init(capacity: Int, channelCount: Int = UnicornSample.eegChannelCount) {
+    init(capacity: Int, channelCount: Int = UnicornSample.totalChannelCount) {
         self.capacity = capacity
         self.channelCount = channelCount
         self.buffer = [Float](repeating: 0, count: capacity * channelCount)
@@ -25,8 +25,9 @@ class RingBuffer {
     func write(_ sample: UnicornSample) {
         lock.lock()
         let offset = writeIndex * channelCount
-        for i in 0..<channelCount {
-            buffer[offset + i] = sample.eeg[i]
+        let all = sample.allChannels
+        for i in 0..<min(channelCount, all.count) {
+            buffer[offset + i] = all[i]
         }
         writeIndex = (writeIndex + 1) % capacity
         if count < capacity {
@@ -43,7 +44,6 @@ class RingBuffer {
         var result = [[Float]]()
         result.reserveCapacity(n)
 
-        // Start reading from the oldest of the requested samples
         let startIndex = (writeIndex - n + capacity) % capacity
         for i in 0..<n {
             let idx = (startIndex + i) % capacity
@@ -53,6 +53,20 @@ class RingBuffer {
         }
         lock.unlock()
         return result
+    }
+
+    /// Write a raw float array (for non-UnicornSample data like band powers).
+    func writeRaw(_ values: [Float]) {
+        lock.lock()
+        let offset = writeIndex * channelCount
+        for i in 0..<min(channelCount, values.count) {
+            buffer[offset + i] = values[i]
+        }
+        writeIndex = (writeIndex + 1) % capacity
+        if count < capacity {
+            count += 1
+        }
+        lock.unlock()
     }
 
     func clear() {

@@ -57,7 +57,7 @@ struct OutputConfigView: View {
 
                 // LSL output
                 VStack(alignment: .leading, spacing: 4) {
-                    Toggle("LSL Stream", isOn: $lslEnabled)
+                    Toggle("LSL Raw EEG", isOn: $lslEnabled)
                         .onChange(of: lslEnabled) { _ in
                             updateOutputs()
                         }
@@ -69,6 +69,8 @@ struct OutputConfigView: View {
                                 .frame(width: 120)
                         }
                     }
+
+                    Toggle("LSL Band Power", isOn: $engine.bandPowerLSLEnabled)
                 }
                 .frame(minWidth: 200, alignment: .leading)
 

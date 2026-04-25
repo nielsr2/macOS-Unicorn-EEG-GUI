@@ -2,7 +2,7 @@
  * ConnectionView.swift
  * UnicornEEG
  *
- * Port selection dropdown, connect/disconnect, and start/stop streaming controls.
+ * Port selection and start/stop streaming controls.
  */
 
 import SwiftUI
@@ -25,29 +25,15 @@ struct ConnectionView: View {
                 }
             }
             .frame(minWidth: 300)
-            .disabled(engine.isConnected)
+            .disabled(engine.isStreaming)
 
             Button(action: refreshPorts) {
                 Image(systemName: "arrow.clockwise")
             }
-            .disabled(engine.isConnected)
+            .disabled(engine.isStreaming)
             .help("Refresh port list")
 
             Spacer()
-
-            // Connect / Disconnect
-            if engine.isConnected {
-                Button("Disconnect") {
-                    engine.disconnect()
-                }
-                .tint(.red)
-            } else {
-                Button("Connect") {
-                    guard !selectedPortName.isEmpty else { return }
-                    engine.connect(portName: selectedPortName)
-                }
-                .disabled(selectedPortName.isEmpty)
-            }
 
             // Start / Stop streaming
             if engine.isStreaming {
@@ -57,9 +43,10 @@ struct ConnectionView: View {
                 .tint(.orange)
             } else {
                 Button("Start") {
-                    engine.startStreaming()
+                    guard !selectedPortName.isEmpty else { return }
+                    engine.startStreaming(portName: selectedPortName)
                 }
-                .disabled(!engine.isConnected)
+                .disabled(selectedPortName.isEmpty)
             }
         }
         .onAppear {
@@ -69,7 +56,6 @@ struct ConnectionView: View {
 
     private func refreshPorts() {
         ports = UnicornDevice.listPorts()
-        // Auto-select first Unicorn device, or first port
         if let unicorn = ports.first(where: { $0.isUnicorn }) {
             selectedPortName = unicorn.name
         } else if let first = ports.first {

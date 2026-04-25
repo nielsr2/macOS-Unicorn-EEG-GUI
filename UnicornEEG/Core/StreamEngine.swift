@@ -3,15 +3,21 @@
  * UnicornEEG
  *
  * Manages the background acquisition thread. Reads packets from the Unicorn
- * device, parses them, feeds samples to registered output sinks and the
- * ring buffer for visualization.
+ * device, parses them, feeds samples to registered output sinks, the
+ * ring buffer for visualization, and the band power processor for FFT.
  */
 
 import Foundation
 
 class StreamEngine: ObservableObject {
     let device = UnicornDevice()
-    let ringBuffer = RingBuffer(capacity: 1250) // 5 seconds at 250 Hz
+    let ringBuffer = RingBuffer(capacity: 7500) // 30 seconds at 250 Hz
+
+    // Band power processing
+    let bandPowerProcessor = BandPowerProcessor()
+    let bandPowerBuffer = RingBuffer(capacity: 120, channelCount: FrequencyBand.count) // 60 seconds at ~2 Hz
+    let bandPowerLSL = BandPowerLSLOutput()
+    @Published var bandPowerLSLEnabled = false
 
     @Published var isConnected = false
     @Published var isStreaming = false
@@ -30,6 +36,23 @@ class StreamEngine: ObservableObject {
         set { runLock.withLock { _shouldRun = newValue } }
     }
 
+    init() {
+        // When band powers are computed, write averages to the band buffer
+        // and push all data to LSL
+        bandPowerProcessor.onBandPowerComputed = { [weak self] result in
+            guard let self = self else { return }
+
+            // Write average band powers to the visualization ring buffer
+            // Create a fake UnicornSample-like write — we use a dedicated write method
+            self.bandPowerBuffer.writeRaw(result.average)
+
+            // Push to LSL if enabled
+            if self.bandPowerLSLEnabled {
+                self.bandPowerLSL.pushResult(result)
+            }
+        }
+    }
+
     // MARK: - Output Management
 
     func addOutput(_ output: OutputSink) {
@@ -43,40 +66,24 @@ class StreamEngine: ObservableObject {
         outputs.removeAll()
     }
 
-    // MARK: - Connection
-
-    func connect(portName: String) {
-        guard !isConnected else { return }
-
-        do {
-            try device.connect(portName: portName)
-            DispatchQueue.main.async {
-                self.isConnected = true
-                self.errorMessage = nil
-            }
-        } catch {
-            DispatchQueue.main.async {
-                self.errorMessage = error.localizedDescription
-            }
-        }
-    }
-
-    func disconnect() {
-        if isStreaming {
-            stopStreaming()
-        }
-        device.disconnect()
-        DispatchQueue.main.async {
-            self.isConnected = false
-            self.batteryLevel = 0
-            self.sampleCount = 0
-        }
-    }
-
     // MARK: - Streaming
 
-    func startStreaming() {
-        guard isConnected, !isStreaming else { return }
+    func startStreaming(portName: String) {
+        guard !isStreaming else { return }
+
+        if !isConnected {
+            do {
+                try device.connect(portName: portName)
+                DispatchQueue.main.async {
+                    self.isConnected = true
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.errorMessage = error.localizedDescription
+                }
+                return
+            }
+        }
 
         do {
             try device.startAcquisition()
@@ -87,7 +94,6 @@ class StreamEngine: ObservableObject {
             return
         }
 
-        // Start output sinks
         for output in outputs {
             do {
                 try output.start()
@@ -98,8 +104,16 @@ class StreamEngine: ObservableObject {
             }
         }
 
+        // Start band power LSL if enabled
+        if bandPowerLSLEnabled {
+            bandPowerLSL.start()
+        }
+
         shouldRun = true
+        device.shouldStop = false
         ringBuffer.clear()
+        bandPowerBuffer.clear()
+        bandPowerProcessor.reset()
 
         DispatchQueue.main.async {
             self.isStreaming = true
@@ -117,9 +131,10 @@ class StreamEngine: ObservableObject {
 
     func stopStreaming() {
         shouldRun = false
+        device.shouldStop = true
 
-        // Wait briefly for acquisition thread to exit
-        while acquisitionThread?.isExecuting == true {
+        let deadline = Date().addingTimeInterval(2.0)
+        while acquisitionThread?.isExecuting == true && Date() < deadline {
             Thread.sleep(forTimeInterval: 0.01)
         }
         acquisitionThread = nil
@@ -129,9 +144,22 @@ class StreamEngine: ObservableObject {
         for output in outputs {
             output.stop()
         }
+        bandPowerLSL.stop()
 
         DispatchQueue.main.async {
             self.isStreaming = false
+        }
+    }
+
+    func shutdown() {
+        if isStreaming {
+            stopStreaming()
+        }
+        device.disconnect()
+        DispatchQueue.main.async {
+            self.isConnected = false
+            self.batteryLevel = 0
+            self.sampleCount = 0
         }
     }
 
@@ -142,26 +170,28 @@ class StreamEngine: ObservableObject {
 
         while shouldRun {
             guard let sample = device.readPacket() else {
-                shouldRun = false
-                DispatchQueue.main.async {
-                    self.errorMessage = "Cannot read packet — connection lost?"
-                    self.isStreaming = false
-                    self.device.stopAcquisition()
+                if shouldRun {
+                    DispatchQueue.main.async {
+                        self.errorMessage = "Cannot read packet — connection lost?"
+                        self.isStreaming = false
+                    }
+                    device.stopAcquisition()
                     for output in self.outputs {
                         output.stop()
                     }
+                    bandPowerLSL.stop()
                 }
                 return
             }
 
             localCount += 1
             ringBuffer.write(sample)
+            bandPowerProcessor.processSample(sample)
 
             for output in outputs {
                 output.processSample(sample)
             }
 
-            // Update UI at 4 Hz (every 62 samples) to avoid flooding the main thread
             if localCount % 62 == 0 {
                 let bat = sample.battery
                 let cnt = localCount

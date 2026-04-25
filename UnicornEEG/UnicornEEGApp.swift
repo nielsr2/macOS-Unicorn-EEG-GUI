@@ -15,6 +15,9 @@ struct UnicornEEGApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(engine)
+                .onReceive(NotificationCenter.default.publisher(for: NSApplication.willTerminateNotification)) { _ in
+                    engine.shutdown()
+                }
         }
         .defaultSize(width: 1000, height: 700)
     }
