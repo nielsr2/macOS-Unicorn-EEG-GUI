@@ -129,6 +129,7 @@
 			buildPhases = (
 				2C87117F1B84C9DA6490D3A3 /* Sources */,
 				FDF3D35012D2FEC21421999F /* Resources */,
+				925BD92911B8DE7AA3884048 /* Make blueutil executable */,
 			);
 			buildRules = (
 			);
@@ -181,6 +182,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		925BD92911B8DE7AA3884048 /* Make blueutil executable */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Make blueutil executable";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "chmod +x \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/blueutil\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		2C87117F1B84C9DA6490D3A3 /* Sources */ = {

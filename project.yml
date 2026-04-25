@@ -12,6 +12,9 @@ targets:
       - path: UnicornEEG
         excludes:
           - "*.entitlements"
+          - "Resources/blueutil"
+    resources:
+      - path: UnicornEEG/Resources/blueutil
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.unicorn.eeg
@@ -38,9 +41,13 @@ targets:
         MACOSX_DEPLOYMENT_TARGET: "15.0"
         SWIFT_VERSION: "5.9"
     dependencies: []
-    postBuildScripts: []
+    postBuildScripts:
+      - script: "chmod +x \"${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/blueutil\""
+        name: "Make blueutil executable"
     info:
       path: UnicornEEG/Info.plist
+      properties:
+        NSBluetoothAlwaysUsageDescription: "UnicornEEG uses Bluetooth to connect to the Unicorn Hybrid Black EEG headset."
     entitlements:
       path: UnicornEEG/UnicornEEG.entitlements
     frameworks:

@@ -5,6 +5,8 @@ A native macOS application for the [Unicorn Hybrid Black](https://www.unicorn-bi
 <!-- TODO: Add screenshot of the main window with waveforms and band power panel -->
 ![App Screenshot](UNICORN%20MACOS.png)
 
+>Built on [unicorn2xx](https://github.com/robertoostenveld/unicorn2xx) by Robert Oostenveld. If you need cross-platform CLI tools (unicorn2txt, unicorn2lsl, unicorn2audio), see the original repository.
+
 ## Why this app?
 
 The official Unicorn software is Windows-only. This project gives macOS users a fast, hackable alternative with real-time visualization, LSL integration, and reliable Bluetooth that just works — the app automatically handles the forget/re-pair cycle that the Unicorn's Bluetooth stack requires on macOS.
@@ -34,7 +36,7 @@ The official Unicorn software is Windows-only. This project gives macOS users a 
 Install dependencies via Homebrew:
 
 ```bash
-brew install libserialport portaudio libsamplerate xcodegen blueutil
+brew install libserialport portaudio libsamplerate xcodegen
 ```
 
 Install [liblsl](https://github.com/sccn/liblsl/releases) manually — download the latest release and copy the files:
@@ -74,7 +76,7 @@ Then build with **Cmd+B** in Xcode and run.
 ## Troubleshooting
 
 - **Bluetooth won't connect:** Make sure the headset is powered on and has been paired at least once. If all else fails, run `sudo pkill bluetoothd` in a terminal to restart the macOS Bluetooth daemon.
-- **blueutil not found:** Install it with `brew install blueutil`. The app expects it at `/usr/local/bin/blueutil`.
+- **blueutil not found:** The app bundles blueutil, but if issues arise you can also install it with `brew install blueutil` as a fallback.
 - **No serial port appears:** Grant the app Bluetooth permission when prompted. Check System Settings > Privacy & Security > Bluetooth.
 
 ## Dependencies
@@ -85,16 +87,9 @@ Then build with **Cmd+B** in Xcode and run.
 | [liblsl](https://labstreaminglayer.readthedocs.io) | LabStreamingLayer streaming | [Manual install](https://github.com/sccn/liblsl/releases) |
 | [PortAudio](http://www.portaudio.com) | Audio output | `brew install portaudio` |
 | [libsamplerate](http://libsndfile.github.io/libsamplerate) | Audio resampling | `brew install libsamplerate` |
-| [blueutil](https://github.com/toy/blueutil) | Bluetooth CLI control | `brew install blueutil` |
+| [blueutil](https://github.com/toy/blueutil) | Bluetooth CLI control | Bundled in .app |
 
 ## Acknowledgments
 
-Built on [unicorn2xx](https://github.com/robertoostenveld/unicorn2xx) by Robert Oostenveld. If you need cross-platform CLI tools (unicorn2txt, unicorn2lsl, unicorn2audio), see the original repository.
-
-## Alternatives
-
-- [Unicorn Software Suite](https://www.unicorn-bi.com/) — official Windows-only application
-- [BrainFlow](https://brainflow.readthedocs.io/en/stable/SupportedBoards.html#unicorn) — cross-platform library with Unicorn support
-- [unicorn2lsl.py](https://robertoostenveld.nl/unicorn2lsl/) — pure Python LSL streamer
-- [FieldTrip](https://www.fieldtriptoolbox.org/development/realtime/unicorn/) — MATLAB implementation streaming to FieldTrip buffer
-- [unicorn-lsl](https://github.com/mesca/unicorn-lsl) — alternative C++ implementation (work in progress)
+- [unicorn2xx](https://github.com/robertoostenveld/unicorn2xx) by Robert Oostenveld — CLI tools for streaming Unicorn EEG data
+- [blueutil](https://github.com/toy/blueutil) by Frederik Kolber — Bluetooth CLI utility (GPL v2, bundled in this app)

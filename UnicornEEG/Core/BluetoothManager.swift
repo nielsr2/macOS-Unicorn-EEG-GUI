@@ -148,7 +148,13 @@ enum BluetoothManager {
 
     // MARK: - blueutil subprocess
 
-    private static let bleutilPath = "/usr/local/bin/blueutil"
+    private static var bleutilPath: String = {
+        // Prefer bundled copy, fall back to Homebrew install
+        if let bundled = Bundle.main.path(forResource: "blueutil", ofType: nil) {
+            return bundled
+        }
+        return "/usr/local/bin/blueutil"
+    }()
 
     @discardableResult
     private static func run(_ args: [String]) -> Int32 {
