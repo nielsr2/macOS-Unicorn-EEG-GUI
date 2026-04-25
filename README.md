@@ -1,66 +1,112 @@
-# Unicorn2xx
+# Unicorn EEG macOS 2 LSL
 
-This repository includes a number of command-line applications that receive data from the Unicorn Hybrid Black 8-channel EEG system, and stream the data to various other interfaces. These applications can be compiled on macOS, Linux and Windows.
+A native macOS application for the [Unicorn Hybrid Black](https://www.unicorn-bi.com/) 8-channel EEG system. Open source, lightweight, and built for real-time streaming to [LabStreamingLayer (LSL)](https://labstreaminglayer.readthedocs.io) — no official macOS GUI required.
 
-Prior to the Unicorn connecting, the LED gives short flashes every second. After connecting it blinks on and off in a regular pace. When streaming the LED is constantly on. The Bluetooth protocol is documented in a PDF that is hosted on https://github.com/unicorn-bi/Unicorn-Suite-Hybrid-Black.
+<!-- TODO: Add screenshot of the main window with waveforms and band power panel -->
+![App Screenshot](docs/screenshot.png)
 
-All of these applications stream up to 16 channels: EEG 1 to 8, Accelerometer X, Y, Z, Gyroscope X, Y, Z, Battery Level and Counter. Please note that the Unicorn Recorder and UnicornLSL application that are part of the Windows suite have a 17th channel with a Validation Indicator.
+## Why this app?
 
-If you encounter Bluetooth connection problems on macOS, such as the LED keeps giving short flashes which indicates that it is not connecting, open a terminal and type
+The official Unicorn software is Windows-only. This project gives macOS users a fast, hackable alternative with real-time visualization, LSL integration, and reliable Bluetooth that just works — the app automatically handles the forget/re-pair cycle that the Unicorn's Bluetooth stack requires on macOS.
 
-    sudo pkill bluetoothd
+## Features
 
-## Unicorn2txt
+- **8-channel EEG waveform display** — real-time scrolling visualization at 250 Hz
+- **Frequency band power bars** — live delta, theta, alpha, beta, gamma power with customizable frequency ranges
+- **Signal quality head map** — per-electrode contact quality visualization
+- **Customizable band ratios** — alpha/beta, theta/beta, or define your own
+- **Automatic Bluetooth management** — no more manual forget/re-pair in System Settings; the app uses [blueutil](https://github.com/toy/blueutil) to handle it automatically
+- **Multiple output sinks:**
+  - **LSL** — raw EEG stream + optional band power stream
+  - **Text file** — tab-separated values for offline analysis
+  - **Audio** — resampled EEG output to any audio device (real or virtual)
 
-This streams the EEG data to the screen or to a tab-separated text file.
+<!-- TODO: Add screenshot of the band power panel and head map -->
 
-## Unicorn2lsl
+## Requirements
 
-This streams the EEG data to [LabStreamingLayer (LSL)](https://labstreaminglayer.readthedocs.io).
+- macOS 15.0 or later
+- [Homebrew](https://brew.sh)
+- Unicorn Hybrid Black EEG headset (paired via Bluetooth at least once)
 
-## Unicorn2audio
+## Installation
 
-This resamples the EEG data to an audio sample rate and streams it as float32 values to a virtual (or real) audio interface. This can for example be used with [BlackHole](https://github.com/ExistentialAudio/BlackHole) or SoundFlower on macOS, or [VB-Audio Cable](https://vb-audio.com/Cable/index.htm) on Windows.
+Install dependencies via Homebrew:
 
-Since the float32 audio output must be scaled between -1 and +1, the `unicorn2audio` application implements a high-pass filter to remove electrode offsets and drifts. This also means that the offset and slow fluctuations in the accelerometer battery and counter channels is removed. Furthermore, it implements an automatic scaling to fit the signal amplitude between -1 and +1. The scaling is automaticallu adjusted to the most extreme values that are observed.
-
-# Compiling
-
+```bash
+brew install libserialport portaudio libsamplerate xcodegen blueutil
 ```
-mkdir build
-cd build
+
+Install [liblsl](https://github.com/sccn/liblsl/releases) manually — download the latest release and copy the files:
+
+```bash
+# Option A: system-wide
+cp liblsl/lib/* /usr/local/lib/
+cp liblsl/include/* /usr/local/include/
+
+# Option B: project-local
+mkdir -p external/lsl/{lib,include}
+cp liblsl/lib/* external/lsl/lib/
+cp liblsl/include/* external/lsl/include/
+```
+
+## Building
+
+```bash
+./setup_xcode.sh       # generates the Xcode project via XcodeGen
+open UnicornEEG.xcodeproj
+```
+
+Then build with **Cmd+B** in Xcode and run.
+
+> **Note:** The App Sandbox must be disabled for Bluetooth and serial port access.
+
+## Usage
+
+1. Power on the Unicorn headset (LED gives short flashes while waiting)
+2. Make sure the device has been paired with your Mac at least once via System Settings > Bluetooth
+3. Click **Start** — the app automatically resets the Bluetooth connection and begins streaming
+4. Configure outputs (LSL, file, audio) in the bottom panel
+5. Toggle the **Bands** checkbox to show/hide the frequency band power panel
+
+<!-- TODO: Add screenshot of the output configuration panel -->
+
+## Troubleshooting
+
+- **Bluetooth won't connect:** Make sure the headset is powered on and has been paired at least once. If all else fails, run `sudo pkill bluetoothd` in a terminal to restart the macOS Bluetooth daemon.
+- **blueutil not found:** Install it with `brew install blueutil`. The app expects it at `/usr/local/bin/blueutil`.
+- **No serial port appears:** Grant the app Bluetooth permission when prompted. Check System Settings > Privacy & Security > Bluetooth.
+
+## CLI tools
+
+This repository also includes command-line tools that work on macOS, Linux, and Windows:
+
+- **unicorn2txt** — streams EEG data to the screen or a tab-separated text file
+- **unicorn2lsl** — streams EEG data to LabStreamingLayer
+- **unicorn2audio** — resamples EEG to audio sample rate and streams to a virtual or real audio device (e.g., [BlackHole](https://github.com/ExistentialAudio/BlackHole), [VB-Audio Cable](https://vb-audio.com/Cable/index.htm))
+
+Build the CLI tools with CMake:
+
+```bash
+mkdir build && cd build
 cmake ..
 cmake --build .
 ```
 
-# External dependencies
+## External dependencies
 
-- <https://sigrok.org/wiki/Libserialport> for all applications
-- <https://labstreaminglayer.readthedocs.io> for `unicorn2lsl`
-- <http://www.portaudio.com> and <http://libsndfile.github.io/libsamplerate> for `unicorn2audio`
+| Library | Purpose | Install |
+|---------|---------|---------|
+| [libserialport](https://sigrok.org/wiki/Libserialport) | Serial port communication | `brew install libserialport` |
+| [liblsl](https://labstreaminglayer.readthedocs.io) | LabStreamingLayer streaming | [Manual install](https://github.com/sccn/liblsl/releases) |
+| [PortAudio](http://www.portaudio.com) | Audio output | `brew install portaudio` |
+| [libsamplerate](http://libsndfile.github.io/libsamplerate) | Audio resampling | `brew install libsamplerate` |
+| [blueutil](https://github.com/toy/blueutil) | Bluetooth CLI control | `brew install blueutil` |
 
-You can install these with your platform-specific package manager (homebrew, apt, yum), after which they will end up in `/usr/local/lib` and `/usr/local/include`. You can also install them manually in the `external` directory. In that case the directory layout should be
+## Alternatives
 
-```
-external/
-├── serialport
-│   ├── include
-│   └── lib
-├── lsl
-│   ├── include
-│   └── lib
-├── portaudio
-│   ├── include
-│   └── lib
-└── samplerate
-    ├── include
-    └── lib
-```
-
-# Alternatives
-
-- The [Unicorn Software Suite](https://www.unicorn-bi.com/) includes a Windows-only Unicorn2lsl application that streams to LSL.
-- [BrainFlow](https://brainflow.readthedocs.io/en/stable/SupportedBoards.html#unicorn) includes support for the Unicorn.
-- [unicorn2lsl.py](https://robertoostenveld.nl/unicorn2lsl/) is a pure Python implementation that streams to LSL.
-- [FieldTrip](https://www.fieldtriptoolbox.org/development/realtime/unicorn/) includes a pure MATLAB implementation that streams to the FieldTrip buffer.
-- Here is a [GitHub repository](https://github.com/mesca/unicorn-lsl) with another alternative that is implemented in C++ (work in progress).
+- [Unicorn Software Suite](https://www.unicorn-bi.com/) — official Windows-only application
+- [BrainFlow](https://brainflow.readthedocs.io/en/stable/SupportedBoards.html#unicorn) — cross-platform library with Unicorn support
+- [unicorn2lsl.py](https://robertoostenveld.nl/unicorn2lsl/) — pure Python LSL streamer
+- [FieldTrip](https://www.fieldtriptoolbox.org/development/realtime/unicorn/) — MATLAB implementation streaming to FieldTrip buffer
+- [unicorn-lsl](https://github.com/mesca/unicorn-lsl) — alternative C++ implementation (work in progress)
