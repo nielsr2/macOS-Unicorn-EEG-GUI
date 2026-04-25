@@ -3,7 +3,7 @@
 A native macOS application for the [Unicorn Hybrid Black](https://www.unicorn-bi.com/) 8-channel EEG system. Open source, lightweight, and built for real-time streaming to [LabStreamingLayer (LSL)](https://labstreaminglayer.readthedocs.io) — no official macOS GUI required.
 
 <!-- TODO: Add screenshot of the main window with waveforms and band power panel -->
-![App Screenshot](UNICORN MACOS.png)
+![App Screenshot](UNICORN%20MACOS.png)
 
 ## Why this app?
 
