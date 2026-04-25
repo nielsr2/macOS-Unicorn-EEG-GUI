@@ -19,6 +19,10 @@ class StreamEngine: ObservableObject {
     let bandPowerLSL = BandPowerLSLOutput()
     @Published var bandPowerLSLEnabled = false
 
+    // Signal quality
+    let signalQualityProcessor = SignalQualityProcessor()
+    @Published var signalQuality: [ChannelQualityInfo] = []
+
     @Published var isConnected = false
     @Published var isStreaming = false
     @Published var batteryLevel: Float = 0
@@ -117,6 +121,7 @@ class StreamEngine: ObservableObject {
         ringBuffer.clear()
         bandPowerBuffer.clear()
         bandPowerProcessor.reset()
+        signalQualityProcessor.reset()
 
         DispatchQueue.main.async {
             self.isStreaming = true
@@ -190,6 +195,7 @@ class StreamEngine: ObservableObject {
             localCount += 1
             ringBuffer.write(sample)
             bandPowerProcessor.processSample(sample)
+            _ = signalQualityProcessor.processSample(sample)
 
             for output in outputs {
                 output.processSample(sample)
@@ -198,9 +204,11 @@ class StreamEngine: ObservableObject {
             if localCount % 62 == 0 {
                 let bat = sample.battery
                 let cnt = localCount
+                let qualities = signalQualityProcessor.channelQualities
                 DispatchQueue.main.async {
                     self.batteryLevel = bat
                     self.sampleCount = cnt
+                    self.signalQuality = qualities
                 }
             }
         }

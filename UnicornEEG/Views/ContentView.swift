@@ -26,8 +26,12 @@ struct ContentView: View {
 
                 if showBandPanel {
                     Divider()
-                    BandPowerBarView()
-                        .frame(width: 200)
+                    VStack(spacing: 0) {
+                        BandPowerBarView()
+                        Divider()
+                        HeadMapView()
+                    }
+                    .frame(width: 200)
                 }
             }
 
