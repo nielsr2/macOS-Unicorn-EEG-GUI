@@ -1,6 +1,6 @@
 # Unicorn EEG macOS 2 LSL
 
-A native macOS application for the [Unicorn Hybrid Black](https://www.unicorn-bi.com/) 8-channel EEG system. Real-time visualization and streaming to [LabStreamingLayer (LSL)](https://labstreaminglayer.readthedocs.io).
+A native macOS application for the [Unicorn Hybrid Black](https://github.com/unicorn-bi/Unicorn-Suite-Hybrid-Black-User-Manual) 8-channel EEG system. Real-time visualization and streaming to [LabStreamingLayer (LSL)](https://labstreaminglayer.readthedocs.io).
 
 ![App Screenshot](UNICORN%20MACOS.png)
 
@@ -12,8 +12,8 @@ A native macOS application for the [Unicorn Hybrid Black](https://www.unicorn-bi
 
 Grab the latest release for your Mac:
 
-- **[Intel Mac (x86_64)](https://github.com/nielsr2/unicorn2xx-macos-GUI/releases/latest)** 
-- **[Apple Silicon (M1/M2/M3/M4)](https://github.com/nielsr2/unicorn2xx-macos-GUI/releases/latest)**
+- **[Intel Mac (x86_64)](https://github.com/nielsr2/macOS-Unicorn-EEG-GUI/releases/latest)** 
+- **[Apple Silicon (M1/M2/M3/M4)](https://github.com/nielsr2/macOS-Unicorn-EEG-GUI/releases/latest)**
 
 All dependencies are bundled — no Homebrew or other installs needed.
 
